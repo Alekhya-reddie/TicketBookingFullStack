@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>TicketBox - Ticket Booking Platform</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  >
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+  <header class="top-header">
+
+    <div class="header-container">
+
+      <!-- LOGO -->
+      <div class="brand" onclick="navigateTo('events')">
+        <div class="brand-icon">
+          <i class="fa-solid fa-ticket"></i>
+        </div>
+
+        <div class="brand-text">
+          <div class="brand-name">TicketBox</div>
+          <div class="brand-tagline">REAL-TIME PLATFORM</div>
+        </div>
+      </div>
+
+
+      <!-- NAVIGATION -->
+      <nav class="main-navigation">
+
+        <button
+          id="nav-events"
+          onclick="navigateTo('events')"
+          class="nav-btn active"
+        >
+          <i class="fa-solid fa-compass"></i>
+          <span>Explore Events</span>
+        </button>
+
+        <button
+          id="nav-bookings"
+          onclick="navigateTo('bookings')"
+          class="nav-btn"
+        >
+          <i class="fa-solid fa-ticket"></i>
+          <span>My Tickets</span>
+        </button>
+
+        <button
+          id="nav-waitlist"
+          onclick="navigateTo('waitlist')"
+          class="nav-btn waitlist-nav"
+        >
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Waitlist</span>
+
+          <span
+            id="waitlist-badge"
+            class="hidden waitlist-badge"
+          >!</span>
+        </button>
+
+        <button
+          id="nav-organiser"
+          onclick="navigateTo('organiser')"
+          class="nav-btn hidden role-organiser role-admin"
+        >
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <button
+          id="nav-admin"
+          onclick="navigateTo('admin')"
+          class="nav-btn hidden role-admin"
+        >
+          <i class="fa-solid fa-building"></i>
+          <span>Venues</span>
+        </button>
+
+      </nav>
+
+
+      <!-- RIGHT SIDE -->
+      <div class="header-actions">
+
+        <!-- USER -->
+        <div class="user-dropdown-wrapper">
+
+          <button
+            id="role-switcher-btn"
+            onclick="toggleRoleDropdown()"
+            class="user-button"
+          >
+            <span class="user-status"></span>
+
+            <span
+              id="current-user-display"
+              class="current-user"
+            >
+              Loading User...
+            </span>
+
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+
+
+          <div
+            id="role-dropdown"
+            class="hidden role-dropdown"
+          >
+            <div class="dropdown-title">
+              Switch Account / Role
+            </div>
+
+            <div
+              id="users-list-container"
+              class="users-list-container"
+            >
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- EMAIL -->
+        <button
+          onclick="toggleOutboxModal()"
+          class="outbox-button"
+          title="View System Outbox"
+        >
+          <i class="fa-solid fa-envelope"></i>
+
+          <span class="notification-dot"></span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+  <main class="main-container">
+
+
+    <!-- =========================
+         VIEW 1 - EVENTS
+    ========================== -->
+    <section
+      id="view-events"
+      class="page-view animate-fade-in"
+    >
+
+      <!-- PAGE HEADER -->
+      <div class="events-header">
+
+        <div class="events-heading">
+          <p class="section-label">DISCOVER</p>
+
+          <h1>Featured Movies & Concerts</h1>
+
+          <p>
+            Discover upcoming events and reserve your seats in real time.
+          </p>
+        </div>
+
+
+        <!-- SEARCH AND FILTERS -->
+        <div class="events-controls">
+
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+              type="text"
+              id="event-search"
+              oninput="filterEvents()"
+              placeholder="Search events..."
+            >
+          </div>
+
+
+          <div class="filter-buttons">
+
+            <button
+              onclick="setEventTypeFilter('')"
+              id="filter-all"
+              class="filter-tab active"
+            >
+              All
+            </button>
+
+            <button
+              onclick="setEventTypeFilter('Movie')"
+              id="filter-movie"
+              class="filter-tab"
+            >
+              Movies
+            </button>
+
+            <button
+              onclick="setEventTypeFilter('Concert')"
+              id="filter-concert"
+              class="filter-tab"
+            >
+              Concerts
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- EVENT CARDS -->
+      <div
+        id="events-grid"
+        class="events-grid"
+      >
+        <!-- EVENTS GENERATED BY app.js -->
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         VIEW 2 - SEAT MAP
+    ========================== -->
+    <section
+      id="view-seatmap"
+      class="hidden page-view animate-fade-in"
+    >
+
+      <button
+        onclick="navigateTo('events')"
+        class="back-button"
+      >
+        <i class="fa-solid fa-arrow-left"></i>
+        Back to Events
+      </button>
+
+
+      <div
+        id="seatmap-header"
+        class="seatmap-header"
+      >
+        <!-- GENERATED BY app.js -->
+      </div>
+
+
+      <div class="seatmap-layout">
+
+
+        <!-- SEAT MAP -->
+        <div class="seatmap-card">
+
+          <div class="screen-wrapper">
+            <div class="screen-line"></div>
+            <span>STAGE / CINEMA SCREEN</span>
+          </div>
+
+
+          <div
+            id="seat-grid-container"
+            class="seat-grid-wrapper"
+          >
+            <!-- GENERATED BY app.js -->
+          </div>
+
+
+          <div class="seat-legend">
+
+            <div class="legend-item">
+              <span class="legend-box standard"></span>
+              Available
+            </div>
+
+            <div class="legend-item">
+              <span class="legend-box premium"></span>
+              Premium
+            </div>
+
+            <div class="legend-item">
+              <span class="legend-box selected"></span>
+              Selected
+            </div>
+
+            <div class="legend-item">
+              <span class="legend-box held"></span>
+              On Hold
+            </div>
+
+            <div class="legend-item">
+              <span class="legend-box booked"></span>
+              Booked
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- BOOKING SUMMARY -->
+        <aside class="reservation-card">
+
+          <div>
+
+            <div class="reservation-title">
+              <i class="fa-solid fa-cart-shopping"></i>
+
+              <div>
+                <h2>Reservation Summary</h2>
+                <p>Select seats to continue with your booking.</p>
+              </div>
+            </div>
+
+
+            <div
+              id="hold-timer-banner"
+              class="hidden hold-timer"
+            >
+              <div class="hold-timer-top">
+                <span>
+                  <i class="fa-solid fa-stopwatch"></i>
+                  SEATS ON HOLD
+                </span>
+
+                <span id="hold-countdown-timer">
+                  10:00
+                </span>
+              </div>
+
+              <p>
+                Your selected seats are temporarily reserved.
+              </p>
+            </div>
+
+
+            <div
+              id="selected-seats-summary"
+              class="selected-seats-summary"
+            >
+              <div class="empty-seats">
+                No seats selected yet.
+                <br>
+                Click an available seat to select it.
+              </div>
+            </div>
+
+          </div>
+
+
+          <div class="reservation-actions">
+
+            <div class="total-row">
+              <span>Total Amount</span>
+
+              <strong id="summary-total-price">
+                $0.00
+              </strong>
+            </div>
+
+
+            <button
+              id="btn-hold-seats"
+              onclick="requestSeatHold()"
+              disabled
+              class="primary-button"
+            >
+              Place 10-Minute Seat Hold
+            </button>
+
+
+            <button
+              id="btn-confirm-checkout"
+              onclick="confirmCheckout()"
+              class="hidden primary-button confirm-button"
+            >
+              Confirm & Pay Now
+            </button>
+
+
+            <button
+              id="btn-release-hold"
+              onclick="releaseSeatHold()"
+              class="hidden secondary-button"
+            >
+              Cancel Hold & Release Seats
+            </button>
+
+
+            <div
+              id="waitlist-join-container"
+              class="hidden waitlist-container"
+            >
+
+              <p>
+                This category is currently sold out. Join the waitlist to receive seat offers.
+              </p>
+
+              <div class="waitlist-actions">
+
+                <select id="waitlist-category-select">
+                  <option value="Premium">
+                    Premium Category
+                  </option>
+
+                  <option value="Standard">
+                    Standard Category
+                  </option>
+                </select>
+
+
+                <button onclick="joinWaitlist()">
+                  Join Waitlist
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         VIEW 3 - BOOKINGS
+    ========================== -->
+    <section
+      id="view-bookings"
+      class="hidden page-view animate-fade-in"
+    >
+
+      <div class="page-heading">
+
+        <p class="section-label">YOUR BOOKINGS</p>
+
+        <h1>My Confirmed Tickets</h1>
+
+        <p>
+          View your active bookings, QR tickets and booking details.
+        </p>
+
+      </div>
+
+
+      <div
+        id="my-bookings-list"
+        class="bookings-grid"
+      >
+        <!-- GENERATED BY app.js -->
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         VIEW 4 - WAITLIST
+    ========================== -->
+    <section
+      id="view-waitlist"
+      class="hidden page-view animate-fade-in"
+    >
+
+      <div class="page-heading">
+
+        <p class="section-label">QUEUE STATUS</p>
+
+        <h1>Waitlist & Seat Offers</h1>
+
+        <p>
+          Track your queue position and claim available seat offers.
+        </p>
+
+      </div>
+
+
+      <div
+        id="my-waitlist-list"
+        class="waitlist-list"
+      >
+        <!-- GENERATED BY app.js -->
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         VIEW 5 - ORGANISER
+    ========================== -->
+    <section
+      id="view-organiser"
+      class="hidden page-view animate-fade-in"
+    >
+
+      <div class="dashboard-heading">
+
+        <div>
+          <p class="section-label">ANALYTICS</p>
+
+          <h1>Organiser Dashboard</h1>
+
+          <p>
+            Track event occupancy and revenue performance.
+          </p>
+        </div>
+
+
+        <button
+          onclick="openCreateEventModal()"
+          class="primary-button small-button"
+        >
+          <i class="fa-solid fa-plus"></i>
+          Schedule New Event
+        </button>
+
+      </div>
+
+
+      <div
+        id="organiser-analytics-grid"
+        class="analytics-grid"
+      >
+        <!-- GENERATED BY app.js -->
+      </div>
+
+
+      <div class="data-card">
+
+        <div class="data-card-title">
+          Event Occupancy & Revenue Breakdown
+        </div>
+
+
+        <div class="table-wrapper">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Event Title</th>
+                <th>Venue</th>
+                <th>Booked Seats</th>
+                <th>Occupancy Rate</th>
+                <th>Total Revenue</th>
+              </tr>
+            </thead>
+
+            <tbody id="organiser-revenue-tbody">
+              <!-- GENERATED BY app.js -->
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         VIEW 6 - ADMIN
+    ========================== -->
+    <section
+      id="view-admin"
+      class="hidden page-view animate-fade-in"
+    >
+
+      <div class="dashboard-heading">
+
+        <div>
+          <p class="section-label">ADMINISTRATION</p>
+
+          <h1>Venue Management</h1>
+
+          <p>
+            Create venues and configure seating layouts.
+          </p>
+        </div>
+
+
+        <button
+          onclick="openCreateVenueModal()"
+          class="primary-button small-button"
+        >
+          <i class="fa-solid fa-plus"></i>
+          Add New Venue
+        </button>
+
+      </div>
+
+
+      <div
+        id="admin-venues-grid"
+        class="venues-grid"
+      >
+        <!-- GENERATED BY app.js -->
+      </div>
+
+    </section>
+
+  </main>
+
+
+
+  <!-- =========================
+       OUTBOX MODAL
+  ========================== -->
+  <div
+    id="outbox-modal"
+    class="hidden modal-overlay"
+  >
+
+    <div class="modal-box outbox-modal-box">
+
+      <div class="modal-header">
+
+        <div class="modal-title">
+
+          <div class="modal-icon">
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+
+          <div>
+            <h3>System Email Outbox</h3>
+
+            <p>
+              Preview QR tickets and waitlist offer emails.
+            </p>
+          </div>
+
+        </div>
+
+
+        <button
+          onclick="toggleOutboxModal()"
+          class="close-button"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+      </div>
+
+
+      <div
+        id="outbox-list-container"
+        class="modal-content"
+      >
+        <!-- GENERATED BY app.js -->
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =========================
+       CREATE EVENT MODAL
+  ========================== -->
+  <div
+    id="create-event-modal"
+    class="hidden modal-overlay"
+  >
+
+    <div class="modal-box form-modal">
+
+      <div class="modal-header">
+
+        <div>
+          <h3>Schedule New Event</h3>
+          <p>Create a new movie or concert event.</p>
+        </div>
+
+
+        <button
+          onclick="closeCreateEventModal()"
+          class="close-button"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+      </div>
+
+
+      <form
+        id="create-event-form"
+        onsubmit="handleCreateEvent(event)"
+      >
+
+        <div class="form-group">
+          <label>Event Title</label>
+
+          <input
+            type="text"
+            id="ev-title"
+            required
+            placeholder="e.g. Interstellar Live Concert"
+          >
+        </div>
+
+
+        <div class="form-row">
+
+          <div class="form-group">
+            <label>Event Type</label>
+
+            <select id="ev-type">
+              <option value="Movie">Movie</option>
+              <option value="Concert">Concert</option>
+            </select>
+          </div>
+
+
+          <div class="form-group">
+            <label>Venue</label>
+
+            <select
+              id="ev-venue-id"
+              required
+            >
+            </select>
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+          <label>Description</label>
+
+          <textarea
+            id="ev-desc"
+            rows="3"
+            placeholder="Short event description..."
+          ></textarea>
+        </div>
+
+
+        <div class="form-group">
+          <label>Poster Image URL</label>
+
+          <input
+            type="url"
+            id="ev-poster"
+            placeholder="https://images.unsplash.com/..."
+          >
+        </div>
+
+
+        <div class="form-group">
+          <label>Show Date & Time</label>
+
+          <input
+            type="datetime-local"
+            id="ev-time"
+            required
+          >
+        </div>
+
+
+        <div class="form-row">
+
+          <div class="form-group">
+            <label>Premium Price ($)</label>
+
+            <input
+              type="number"
+              step="0.01"
+              id="ev-price-prem"
+              required
+              value="30.00"
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label>Standard Price ($)</label>
+
+            <input
+              type="number"
+              step="0.01"
+              id="ev-price-std"
+              required
+              value="18.00"
+            >
+          </div>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="primary-button form-submit"
+        >
+          Publish Event
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =========================
+       CREATE VENUE MODAL
+  ========================== -->
+  <div
+    id="create-venue-modal"
+    class="hidden modal-overlay"
+  >
+
+    <div class="modal-box form-modal">
+
+      <div class="modal-header">
+
+        <div>
+          <h3>Add New Venue</h3>
+          <p>Configure a venue and its seating layout.</p>
+        </div>
+
+
+        <button
+          onclick="closeCreateVenueModal()"
+          class="close-button"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+      </div>
+
+
+      <form
+        id="create-venue-form"
+        onsubmit="handleCreateVenue(event)"
+      >
+
+        <div class="form-group">
+
+          <label>Venue Name</label>
+
+          <input
+            type="text"
+            id="vn-name"
+            required
+            placeholder="e.g. Royal Opera House"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>Location / Address</label>
+
+          <input
+            type="text"
+            id="vn-location"
+            required
+            placeholder="e.g. City Center"
+          >
+
+        </div>
+
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label>Rows (1-10)</label>
+
+            <input
+              type="number"
+              min="2"
+              max="10"
+              id="vn-rows"
+              required
+              value="5"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Columns (1-12)</label>
+
+            <input
+              type="number"
+              min="2"
+              max="12"
+              id="vn-cols"
+              required
+              value="8"
+            >
+
+          </div>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="primary-button form-submit"
+        >
+          Save Venue
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- TOAST -->
+  <div id="toast-container"></div>
+
+
+  <!-- APP -->
+  <script src="app.js"></script>
+
+</body>
+</html>
