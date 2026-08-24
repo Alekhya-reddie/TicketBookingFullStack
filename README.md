@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TicketBox - High-Demand Ticket Booking Platform
 
 A full-stack ticket booking platform for movies and concerts featuring real-time visual seat selection, TTL seat hold auto-release, concurrency locks against double-booking, automated waitlist reallocation, and QR-coded ticket email delivery.
@@ -124,3 +125,6 @@ The application uses SQLite (`data.db`) with 10 core tables:
 
 ## 📜 System Design Document
 For a detailed 800-word architectural write-up covering TTL mechanics, concurrency locks, and waitlist offer flows, refer to [`SYSTEM_DESIGN.md`](file:///C:/Users/alekh/.gemini/antigravity/scratch/ticket-booking-system/SYSTEM_DESIGN.md).
+=======
+# TicketBookingFullStack
+>>>>>>> 65ef32463a233a764a3ec814739fc4069aa87269
